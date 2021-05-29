@@ -105,14 +105,6 @@ function makeResponsive() {
             .classed("aText", true)
             .text("Lacks Healthcare (%)");
         
-        // Append text to circles
-
-
-        var toolTip = d3.select("body")
-            .append("div")
-            .classed("tooltip", true);
-
-
     })
 
 }

@@ -1,6 +1,6 @@
 // Set up the svg params
-var svgWidth = 960;
-var svgHeight = 500;
+var svgWidth = window.innerWidth - 100;
+var svgHeight = window.innerHeight - 400;
 
 var margin = {
     top: 50,
@@ -27,8 +27,8 @@ var chosenXAxis = "poverty";
 function xScale(censusData, chosenXAxis) {
     // create scales
     var xLinearScale = d3.scaleLinear()
-        .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
-            d3.max(censusData, d => d[chosenXAxis]) * 1.2
+        .domain([d3.min(censusData, d => d[chosenXAxis]) -1,
+            d3.max(censusData, d => d[chosenXAxis]) +2
         ])
         .range([0, width]);
 
@@ -80,7 +80,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
         .attr("class", "d3-tip")
         .offset([100, -10])
         .html(function(d) {
-            return (`${d.state}<br>Coverage: ${d.healthcare}%<br>${label} ${d[chosenXAxis]}`);
+            return (`${d.state}<br>Healthcare: ${d.healthcare}%<br>${label} ${d[chosenXAxis]}`);
     });
 
     circlesGroup.call(toolTip);
@@ -118,19 +118,6 @@ d3.csv("assets/data/data.csv").then(censusData => {
     var yLinearScale = d3.scaleLinear()
         .domain([d3.min(censusData, d => d.healthcare)-0.5, d3.max(censusData, d => d.healthcare)+3])
         .range([height, 0]);
-
-    // Create Axes
-    var bottomAxis = d3.axisBottom(xLinearScale);
-    var leftAxis = d3.axisLeft(yLinearScale);
-
-    // Append x & y axis
-    var xAxis = chartGroup.append("g")
-        .classed("x-axis", true)
-        .attr("transform", `translate(0, ${height})`)
-        .call(bottomAxis);
-
-    chartGroup.append("g")
-        .call(leftAxis);
 
     // Append the circles
     var circlesGroup = chartGroup.selectAll("g")
@@ -182,6 +169,19 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .classed("aText", true)
         .text("Lacks Healthcare (%)");
     
+    // Create Axes
+    var bottomAxis = d3.axisBottom(xLinearScale);
+    var leftAxis = d3.axisLeft(yLinearScale);
+
+    // Append x & y axis
+    var xAxis = chartGroup.append("g")
+        .classed("x-axis", true)
+        .attr("transform", `translate(0, ${height})`)
+        .call(bottomAxis);
+
+    chartGroup.append("g")
+        .call(leftAxis);
+
     // updateToolTip function
     var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
 

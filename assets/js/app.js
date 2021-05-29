@@ -1,18 +1,19 @@
 function makeResponsive() {
 
     var svgArea = d3.select("#scatter").select("svg");
+
     if (!svgArea.empty()) {
         svgArea.remove();
     }
 
     // Set up the svg params
-    var svgWidth = 800;
-    var svgHeight = 600;
+    var svgWidth = window.innerWidth - 100;
+    var svgHeight = window.innerHeight - 500;
 
     var margin = {
     top: 50,
     right: 50,
-    bottom: 120,
+    bottom: 100,
     left: 50
     };
 
@@ -40,24 +41,23 @@ function makeResponsive() {
         });
 
         // Create Scales
-        var xStart = d3.min(censusData, d => d.poverty)-1;
-        var xEnd = d3.max(censusData, d => d.poverty)+2;
+
+        // xScale = poverty
         var xScale = d3.scaleLinear()
-            .domain([xStart, xEnd])
+            .domain([d3.min(censusData, d => d.poverty)-1, d3.max(censusData, d => d.poverty)+2])
             .range([0, width]);
         
-        var yStart = d3.min(censusData, d => d.healthcare)-0.5;
-        var yEnd = d3.max(censusData, d => d.healthcare)+3;
+        // yScale = healthcare
         var yScale = d3.scaleLinear()
-            .domain([yStart, yEnd])
+            .domain([d3.min(censusData, d => d.healthcare)-0.5, d3.max(censusData, d => d.healthcare)+3])
             .range([height, 0]);
-        
+
         // Create Axes
         var bottomAxis = d3.axisBottom(xScale);
         var leftAxis = d3.axisLeft(yScale);
 
         // Append x & y axis
-        var xAix = chartGroup.append("g")
+        chartGroup.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(bottomAxis);
 
@@ -81,7 +81,8 @@ function makeResponsive() {
         circlesGroup.append("text")
             .classed("stateText", true)
             .attr("x", d => xScale(d.poverty))
-            .attr("y", d => yScale(d.healthcare - 0.2))
+            .attr("y", d => yScale(d.healthcare))
+            .attr("alignment-baseline", "central")
             .style("font-size", "10px")
             .text(d => d.abbr);
 
@@ -89,11 +90,9 @@ function makeResponsive() {
         var labelsGroup = chartGroup.append("g")
             .attr("transform", `translate(${width / 2}, ${height + 20})`);
 
-        var povertyLabel = labelsGroup.append("text")
+        labelsGroup.append("text")
             .attr("x", 0)
             .attr("y", 20)
-            // .attr("value", "poverty") // value to grab for event listener
-            // .classed("active", true)
             .classed("aText", true)
             .text("In Poverty (%)");
         
@@ -120,4 +119,4 @@ function makeResponsive() {
 
 makeResponsive();
 
-// d3.select(window).on("resize", makeResponsive);
+d3.select(window).on("resize", makeResponsive);
